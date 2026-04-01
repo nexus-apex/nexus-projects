@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% block title %}Projects | NexusProjects{% endblock %}
+{% block page_title %}Projects{% endblock %}
+{% block content %}
+<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem;flex-wrap:wrap;gap:1rem">
+  <form class="search-bar" method="get" style="flex:1;margin-bottom:0">
+    <input type="text" name="search" value="{{ search }}" placeholder="Search projects...">
+    <select name="status" onchange="this.form.submit()">
+      <option value="">All Status</option>
+      <option value="planning" {% if status_filter == 'planning' %}selected{% endif %}>Planning</option>
+      <option value="active" {% if status_filter == 'active' %}selected{% endif %}>Active</option>
+      <option value="on_hold" {% if status_filter == 'on_hold' %}selected{% endif %}>On Hold</option>
+      <option value="completed" {% if status_filter == 'completed' %}selected{% endif %}>Completed</option>
+      <option value="cancelled" {% if status_filter == 'cancelled' %}selected{% endif %}>Cancelled</option>
+    </select>
+    <button type="submit" class="btn btn-primary btn-sm">Search</button>
+  </form>
+  <a href="/projects/create/" class="btn btn-primary">+ New Project</a>
+</div>
+
+<div class="card">
+  {% if records %}
+  <table>
+    <thead>
+      <tr><th>Name</th><th>Client</th><th>Status</th><th>Priority</th><th>Start Date</th><th>Actions</th></tr>
+    </thead>
+    <tbody>
+      {% for r in records %}
+      <tr>
+        <td><a href="/projects/{{ r.pk }}/edit/"><strong>{{ r.name }}</strong></a></td>
+        <td>{{ r.client|default:"-" }}</td>
+        <td><span class="badge badge-blue">{{ r.get_status_display }}</span></td>
+        <td><span class="badge badge-blue">{{ r.get_priority_display }}</span></td>
+        <td style="color:var(--muted)">{{ r.start_date|date:"M d, Y"|default:"-" }}</td>
+        <td class="actions">
+          <a href="/projects/{{ r.pk }}/edit/" class="btn btn-primary btn-sm">Edit</a>
+          <form method="post" action="/projects/{{ r.pk }}/delete/" style="display:inline" onsubmit="return confirm('Delete?')">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-danger btn-sm">Del</button>
+          </form>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <div class="empty">
+    <p>No projects found.</p>
+    <a href="/projects/create/" class="btn btn-primary" style="margin-top:1rem">Create Project</a>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}
