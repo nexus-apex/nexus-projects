@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block title %}Timeentries | NexusProjects{% endblock %}
+{% block page_title %}Timeentries{% endblock %}
+{% block content %}
+<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem;flex-wrap:wrap;gap:1rem">
+  <form class="search-bar" method="get" style="flex:1;margin-bottom:0">
+    <input type="text" name="search" value="{{ search }}" placeholder="Search timeentries...">
+
+    <button type="submit" class="btn btn-primary btn-sm">Search</button>
+  </form>
+  <a href="/timeentries/create/" class="btn btn-primary">+ New TimeEntry</a>
+</div>
+
+<div class="card">
+  {% if records %}
+  <table>
+    <thead>
+      <tr><th>Task Name</th><th>Member</th><th>Hours</th><th>Date</th><th>Billable</th><th>Actions</th></tr>
+    </thead>
+    <tbody>
+      {% for r in records %}
+      <tr>
+        <td><a href="/timeentries/{{ r.pk }}/edit/"><strong>{{ r.task_name }}</strong></a></td>
+        <td>{{ r.member|default:"-" }}</td>
+        <td>{{ r.hours|floatformat:2 }}</td>
+        <td style="color:var(--muted)">{{ r.date|date:"M d, Y"|default:"-" }}</td>
+        <td><span class="badge {{ r.billable|yesno:\"badge-green,badge-red\" }}">{{ r.billable|yesno:\"Yes,No\" }}</span></td>
+        <td class="actions">
+          <a href="/timeentries/{{ r.pk }}/edit/" class="btn btn-primary btn-sm">Edit</a>
+          <form method="post" action="/timeentries/{{ r.pk }}/delete/" style="display:inline" onsubmit="return confirm('Delete?')">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-danger btn-sm">Del</button>
+          </form>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <div class="empty">
+    <p>No timeentries found.</p>
+    <a href="/timeentries/create/" class="btn btn-primary" style="margin-top:1rem">Create TimeEntry</a>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}
