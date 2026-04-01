@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block title %}{% if editing %}Edit{% else %}New{% endif %} TimeEntry | NexusProjects{% endblock %}
+{% block page_title %}{% if editing %}Edit TimeEntry{% else %}New TimeEntry{% endif %}{% endblock %}
+{% block content %}
+<div class="card" style="max-width:750px">
+  <form method="post">
+    {% csrf_token %}
+    <div class="form-row">
+      <div class="form-group">
+        <label>Task Name</label>
+        <input type="text" name="task_name" value="{{ record.task_name|default:'' }}">
+      </div>
+      <div class="form-group">
+        <label>Member</label>
+        <input type="text" name="member" value="{{ record.member|default:'' }}">
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Hours</label>
+        <input type="number" step="0.01" name="hours" value="{{ record.hours|default:'0' }}">
+      </div>
+      <div class="form-group">
+        <label>Date</label>
+        <input type="date" name="date" value="{{ record.date|date:'Y-m-d'|default:'' }}">
+      </div>
+    </div>
+    <div class="form-group">
+      <div class="checkbox-wrapper">
+        <input type="checkbox" name="billable" id="id_billable" {% if record.billable %}checked{% endif %}>
+        <label for="id_billable" style="margin-bottom:0">Billable</label>
+      </div>
+    </div>
+    <div class="form-group">
+      <label>Description</label>
+      <textarea name="description">{{ record.description|default:'' }}</textarea>
+    </div>
+
+    <div style="display:flex;gap:0.75rem;margin-top:1rem">
+      <button type="submit" class="btn btn-primary">{% if editing %}Update{% else %}Create{% endif %} TimeEntry</button>
+      <a href="/timeentries/" class="btn" style="background:var(--border);color:var(--text)">Cancel</a>
+    </div>
+  </form>
+</div>
+{% endblock %}
