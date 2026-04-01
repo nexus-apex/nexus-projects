@@ -1,40 +1,54 @@
 from django.core.management.base import BaseCommand
 from django.contrib.auth.models import User
-from core.models import Record
-import os
-
-# These get replaced per app by the customize script
-APP_NAME = os.environ.get('APP_NAME', 'NexusProjects')
-RECORDS = [
-    ('Sample Record 1', 'First demo record', 'active', 'demo1@example.com', '+91-9876543210', 15000),
-    ('Sample Record 2', 'Second demo record', 'active', 'demo2@example.com', '+91-9876543211', 25000),
-    ('Sample Record 3', 'Third demo record', 'pending', 'demo3@example.com', '+91-9876543212', 8500),
-    ('Sample Record 4', 'Fourth demo record', 'active', 'demo4@example.com', '+91-9876543213', 42000),
-    ('Sample Record 5', 'Fifth demo record', 'inactive', 'demo5@example.com', '+91-9876543214', 12000),
-    ('Sample Record 6', 'Sixth demo record', 'active', 'demo6@example.com', '+91-9876543215', 31000),
-    ('Sample Record 7', 'Seventh demo record', 'pending', 'demo7@example.com', '+91-9876543216', 19500),
-    ('Sample Record 8', 'Eighth demo record', 'active', 'demo8@example.com', '+91-9876543217', 55000),
-    ('Sample Record 9', 'Ninth demo record', 'active', 'demo9@example.com', '+91-9876543218', 7800),
-    ('Sample Record 10', 'Tenth demo record', 'inactive', 'demo10@example.com', '+91-9876543219', 23000),
-]
+from core.models import Project, Task, TimeEntry
+from datetime import date, timedelta
+import random
 
 
 class Command(BaseCommand):
-    help = 'Seed database with demo data'
+    help = 'Seed NexusProjects with demo data'
 
     def handle(self, *args, **kwargs):
-        # Create admin user
         if not User.objects.filter(username='admin').exists():
-            User.objects.create_superuser('admin', 'admin@nexuscrm.com', 'Admin@2024')
+            User.objects.create_superuser('admin', 'admin@nexusprojects.com', 'Admin@2024')
             self.stdout.write(self.style.SUCCESS('Admin user created'))
 
-        # Create demo records
-        if Record.objects.count() == 0:
-            for name, desc, status, email, phone, amount in RECORDS:
-                Record.objects.create(
-                    name=name, description=desc, status=status,
-                    email=email, phone=phone, amount=amount
+        if Project.objects.count() == 0:
+            for i in range(10):
+                Project.objects.create(
+                    name=f"Sample Project {i+1}",
+                    client=f"Sample {i+1}",
+                    status=random.choice(["planning", "active", "on_hold", "completed", "cancelled"]),
+                    priority=random.choice(["low", "medium", "high", "critical"]),
+                    start_date=date.today() - timedelta(days=random.randint(0, 90)),
+                    end_date=date.today() - timedelta(days=random.randint(0, 90)),
+                    budget=round(random.uniform(1000, 50000), 2),
+                    description=f"Sample description for record {i+1}",
                 )
-            self.stdout.write(self.style.SUCCESS(f'{len(RECORDS)} demo records created'))
-        else:
-            self.stdout.write('Records already exist, skipping seed')
+            self.stdout.write(self.style.SUCCESS('10 Project records created'))
+
+        if Task.objects.count() == 0:
+            for i in range(10):
+                Task.objects.create(
+                    title=f"Sample Task {i+1}",
+                    project_name=f"Sample Task {i+1}",
+                    assignee=f"Sample {i+1}",
+                    status=random.choice(["to_do", "in_progress", "review", "done"]),
+                    priority=random.choice(["low", "medium", "high"]),
+                    due_date=date.today() - timedelta(days=random.randint(0, 90)),
+                    estimated_hours=random.randint(1, 100),
+                    description=f"Sample description for record {i+1}",
+                )
+            self.stdout.write(self.style.SUCCESS('10 Task records created'))
+
+        if TimeEntry.objects.count() == 0:
+            for i in range(10):
+                TimeEntry.objects.create(
+                    task_name=f"Sample TimeEntry {i+1}",
+                    member=f"Sample {i+1}",
+                    hours=round(random.uniform(1000, 50000), 2),
+                    date=date.today() - timedelta(days=random.randint(0, 90)),
+                    billable=random.choice([True, False]),
+                    description=f"Sample description for record {i+1}",
+                )
+            self.stdout.write(self.style.SUCCESS('10 TimeEntry records created'))
