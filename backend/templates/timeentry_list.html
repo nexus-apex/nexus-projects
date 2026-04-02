@@ -24,7 +24,7 @@
         <td>{{ r.member|default:"-" }}</td>
         <td>{{ r.hours|floatformat:2 }}</td>
         <td style="color:var(--muted)">{{ r.date|date:"M d, Y"|default:"-" }}</td>
-        <td><span class="badge {{ r.billable|yesno:\"badge-green,badge-red\" }}">{{ r.billable|yesno:\"Yes,No\" }}</span></td>
+        <td><span class="badge {{ r.billable|yesno:"badge-green,badge-red" }}">{{ r.billable|yesno:"Yes,No" }}</span></td>
         <td class="actions">
           <a href="/timeentries/{{ r.pk }}/edit/" class="btn btn-primary btn-sm">Edit</a>
           <form method="post" action="/timeentries/{{ r.pk }}/delete/" style="display:inline" onsubmit="return confirm('Delete?')">
